@@ -1,6 +1,6 @@
 #include "ext.h"
 
-dict* dict_init() {
+dict* dict_init(void) {
    dict *d = (dict*)calloc(1, sizeof(dict));
    if (!d){
        return NULL;
@@ -242,56 +242,3 @@ int dict_mostcommon(const dict* d) {
    find_most_common(d, &max_freq);
    return max_freq;
 }
-
-void test(void) {
-   // Initialize the dictionary
-   dict* d = dict_init();
-   assert(d != NULL);
-   assert(d->size == 0);
-
-   // Test `isvalid_str`
-   assert(isvalid_str("Kool-Aid"));
-   assert(!isvalid_str("Hello*"));
-   assert(!isvalid_str("Hello@World"));
-   assert(!isvalid_str("12345"));
-   assert(!isvalid_str(""));
-
-   // Test `valid_hash`
-   assert(valid_hash("test", INITIAL_CAPACITY));
-   assert(valid_hash("anotherTest", INITIAL_CAPACITY));
-   assert(valid_hash("12345", INITIAL_CAPACITY));
-
-   // Test `insert_word`
-   unsigned long primary_hash = bersteins_hash("hello", d->capacity);
-   unsigned long secondary_hash = fast_secondary_hash("hello", d->capacity);
-   assert(insert_word(d, "hello", primary_hash, secondary_hash) == true);
-   assert(strcmp(d->buckets[primary_hash].wd, "hello") == 0);
-   assert(d->buckets[primary_hash].freq == 1);
-
-   dict_free(&d);
-   d = dict_init();
-
-   const char* words[100] = {
-       "From", "the", "movie", "10", "things", "i", "hate", "about", "you",
-       "I", "hate", "the", "way", "you", "talk", "to", "me", "And", "the",
-       "way", "you", "cut", "your", "hair", "I", "hate", "the", "way",
-       "you", "drive", "my", "car", "I", "hate", "it", "when", "you", "stare",
-       "I", "hate", "your", "big", "dumb", "combat", "boots", "I", "hate", "it",
-       "when", "you", "lie"
-       };
-
-   int num_words = sizeof(words) / sizeof(words[0]);
-   for (int i = 0; i < num_words; i++) {
-       dict_addword(d, words[i]);
-       }
-
-   assert(dict_wordcount(d) == 51);
-   assert(dict_mostcommon(d) == 6);
-   dict* entry_dict = dict_spell(d, "hate");
-   assert(entry_dict != NULL);
-
-   dict_free(&d);
-   assert(d == NULL);
-}
-
-

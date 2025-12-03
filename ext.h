@@ -25,12 +25,12 @@ struct dict{
 };
 typedef struct dict dict;
 
-dict* dict_init();
+dict* dict_init(void);
 bool isvalid_str(const char* wd);
 void valid_str(const char* input, char* output);
 
 unsigned long bersteins_hash(const char* wd, int capacity);
-unsigned long secondary_hash(const char* wd, int capacity);
+unsigned long fast_secondary_hash(const char* wd, int capacity);
 bool valid_hash(const char* wd, int capacity);
 
 void rehash_entry(dict* d, HashTable entry);
@@ -45,6 +45,6 @@ dict* dict_spell(const dict* d, const char* wd);
 
 void find_most_common(const dict* d, int* max_freq);
 int dict_mostcommon(const dict* d);
+
 void test(void);
-
-
+void test2(void);

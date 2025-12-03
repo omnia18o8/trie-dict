@@ -1,5 +1,24 @@
-My implementation uses Bernstein’s hash function combined with a custom secondary hash function to apply double hashing for managing the dictionary. The hash table is initialized with a prime size (98317), and a remainder-based distribution is used to minimize collisions. To reduce the risk of collisions, dynamic resizing is employed with a load factor threshold (0.75), a standard value that balances memory usage and performance. When the load factor exceeds this threshold, the hash table is dynamically resized by doubling its capacity. This resizing helps to maintain performance as the dictionary grows, though it also increases memory consumption. The approach is simpler to implement than a trie-based structure, which requires complex traversal, particularly for incomplete words not added in dict_addword, and has a time complexity of O(N), while hashing achieves O(1) average time complexity for insertions, deletions, and lookups. 
+# trie-dict
 
-Less common letters like 'v', 'w', and 'x' clustering fewer nodes, and more frequent letters like 't', 'r', and 'a' leading to suboptimal search times for certain words while using tries. Furthermore, while Bernstein’s hash function is simple it is not optimal for larger datasets, leading to higher collision rates as the dictionary grew and therefore the performance of the hash table degraded, particularly with sequential search for collision resolution. Although double hashing reduced this issue, the success of the method was heavily dependent on selecting an effective secondary hash function. I experimented with different approaches and eventually settled on a secondary function i found on StackOverflow using modulo 17, adjusted by the table’s capacity, which improved key distribution. 
+Dictionary implementations in C for a coursework-style project:
+- `t27.c` / `td27.h`: a 27-way trie (letters a–z plus apostrophe) with frequency counts.
+- `ext.c` / `ext.h`: a hash-table dictionary using Bernstein’s hash + a secondary hash and resizing.
+- `driver.c` and `driverext.c`: simple assertion-based drivers.
+- `test.c` and `testext.c`: extra tests used by the builds.
 
-In comparison to tries, the hashing approach was more straightforward to implement and offered better average-case performance. However, the main trade-off with hashing is the time-space tradeoff: while tries may be faster for small datasets, hash tables require resizing and memory adjustments as they grow, potentially leading to higher memory consumption. Additionally, more advanced hash functions, such as Jenkins or MurmurHash, could further improve key distribution and performance by reducing collisions and providing a more even spread of keys. 
+## Build and run
+Requires a C99 compiler (e.g., `gcc` or `clang`).
+
+- Build trie binaries: `make`  
+  - Optimized: `./t27`  
+  - Address/UBSan: `./t27_d`
+- Build hash-table binary: `make ext`  
+  - Runs the hash implementation tests on start.
+- Run the trie binary: `make run` (optimized) or `make rund` (sanitized).
+- Clean builds: `make clean`
+
+## Notes
+- Overall: both implementations store words, count frequency of repeats, and let you query presence (`dict_spell`), total counts, and the most common word count; tests use asserts to sanity-check behavior.
+- Trie: stores words character by character; supports apostrophes; tracks word frequency; includes autocomplete helpers to find the most common suffix below a prefix.
+- Hash table: lowercases/normalizes words, allows apostrophes, uses double hashing to resolve collisions, and resizes at a 0.75 load factor.
+- The drivers expect wordlist files if you enable the file-loading sections; otherwise the embedded asserts still run.
